@@ -4,12 +4,12 @@ The various requirements we did for the client side as a group started with firs
 The system now when connected will first prompt the user to either login or sign-up, after a selection is made it will take them to the main webpage that shows a “type your message bubble”, a send, a to, and the message feed as well. When “To” is selected the user can select which client to choose from a list of users that are connected to the server. After the user has selected another user, the user can type a message and using the send button send them a message. On the top left corner, the user can select which group chat to join and can send messages to all users that are connected to the server.
 The struggles we faced along the way were implementing the group chat functionality, the difficulty of it dealing with its handler, and HTML design as well. Another struggle we faced was implementing the login function, we were not able to get it working properly neither the sign-in was working properly. The script needs to be looked at along with working around the handlers.
 ![Alt Text](./Login.png)
-![Alt Text](./demo/imgs/Webchat.png)
+![Alt Text](./Webchat.png)
 
 In conclusion, we were able to merge our branches successfully, with a couple of errors that have been left unresolved. Our goal is to be able in the next iteration successfully finalize our requirements and add more functionality to them. We each earned our own experience working on different tasks whether it be client, server, backend, or frontend. This iteration also showed our ability to work as a team in order to solve each other's problems whether it be the backend or client side. We hope that by the next iteration, we will be able to solve the problems that were left in this iteration and be able to add more requirements in the future.
 
 See below for our Design Documentation & Requirements Spreadsheet
-![Alt Text](./demo/imgs/group.png)
-![Alt Text](./demo/imgs/private.png)
-![Alt Text](./demo/imgs/class_diagram.png)
-![Alt Text](./demo/imgs/requirements.png)
+![Alt Text](./group.png)
+![Alt Text](./private.png)
+![Alt Text](./class_diagram.png)
+![Alt Text](./requirements.png)
