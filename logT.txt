@@ -1,0 +1,22 @@
+Aug 14, 2023 9:53:05 PM uta.cse.cse3310.webchat.LogTest LoggerTest
+INFO: This is a test
+Aug 14, 2023 9:53:05 PM uta.cse.cse3310.webchat.LogTest LogCountTest
+INFO: count test
+Aug 14, 2023 9:53:05 PM uta.cse.cse3310.webchat.LogTest LogCountTest
+INFO: count test
+Aug 14, 2023 9:53:05 PM uta.cse.cse3310.webchat.LogTest LogCountTest
+INFO: count test
+Aug 14, 2023 9:53:05 PM uta.cse.cse3310.webchat.LogTest LogCountTest
+INFO: count test
+Aug 14, 2023 9:53:05 PM uta.cse.cse3310.webchat.LogTest LogCountTest
+INFO: count test
+Aug 14, 2023 9:53:05 PM uta.cse.cse3310.webchat.LogTest LogCountTest
+INFO: count test
+Aug 14, 2023 9:53:05 PM uta.cse.cse3310.webchat.LogTest LogCountTest
+INFO: count test
+Aug 14, 2023 9:53:05 PM uta.cse.cse3310.webchat.LogTest LogCountTest
+INFO: count test
+Aug 14, 2023 9:53:05 PM uta.cse.cse3310.webchat.LogTest LogCountTest
+INFO: count test
+Aug 14, 2023 9:53:05 PM uta.cse.cse3310.webchat.LogTest LogCountTest
+INFO: count test

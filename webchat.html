@@ -1,0 +1,462 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+
+<body>
+    <div id="clientIdDisplay" class="client-id-display">
+        Your Client ID: <span id="clientId"></span>
+    </div>
+    <div id="createChatPrompts" class="chatPrompts">
+        <div id="chatRoomWindow" style="position:fixed; left:10px; top:10px;"></div>
+        <div id="groupChatErrorMessage" style="color: red; display: none;">Please select a recipient before sending a message.
+        </div>
+        <div id="groupChatErrorSend" style="color: red; display: none;">Cannont send empty message.</div>
+        <div>Directly Message Any Client Below</div>
+        <div id="directMessagingChatbox" class="chatContainer">
+          
+            <div id="errorMessage" style="color: red; display: none;">Please select a recipient before sending a message.
+            </div>
+            <div id="errorSend" style="color: red; display: none;">Cannont send empty message.</div>
+            <div id="content" class="msgContainer"></div>
+            <div id="inputContainer" class="textContainer">
+                <input type="text" id="directMessagingInput" placeholder="Type your message here">
+                <button type="button" class="toButton btn btn-primary" data-toggle="modal" data-target="#clientModal">Recipient:</button>
+                
+                <div class="modal fade" id="clientModal" tabindex="-1" role="dialog" aria-labelledby="clientModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="clientModalLabel">Clients</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                
+                            </div>
+                            
+                            <div class="modal-body" id="clientList"></div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button id="sendDirectMessageButton" class="sendContainer">Send</i></button>
+        </div>
+        <input type="text" id="chatRoomNameInput" placeholder="Enter Chatroom Name">
+        <button id="createChatRoom" class="createChatRoom">Create a Public Chatroom</button>
+        <div id="chatRoomButtonList"></div>
+    </div>
+    <div id="notificationBell" class="notification-bell">
+        <i class="fas fa-bell"></i>
+        <span id="notificationCount" class="notification-count">0</span>
+    </div>
+    <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notificationModalLabel">Notification</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    A user has sent you a message.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+</html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        //establishing the connection
+        var serverUrl = "ws://" + window.location.hostname + ":8085";
+        var connection = new WebSocket(serverUrl);
+        var myInfo = null;
+        var directMessages = []; // store directMessages
+
+        /*
+        chatrooms are stored here. The server broadcasts the list of chatrooms to every
+        connected client
+        */
+
+        var chatRooms = [];
+        var lastAppendedMessageIndex = {};
+
+        //communicating with other clients
+        var clientConnections = [];
+        var directMessageRecipientID = null;
+
+        /*
+        Define a class for serving data to the server. Data will require an identifier and the actual data
+        This class is how you send/recieve ANY object to the server
+        */
+
+        class serveData {
+            constructor(identifier, data) {
+                this.identifier = identifier;
+
+                //shall be a json string
+                this.data = data;
+            }
+        }
+
+        //event handlers
+        connection.onopen = function(evt) {
+            console.log("open");
+        }
+        connection.onclose = function(evt) {
+            console.log("close");
+        }
+        connection.onmessage = function(evt) {
+            var msg = evt.data;
+            console.log("Message received: " + msg);
+
+            var message = JSON.parse(msg);
+
+            //determine what kind of message was received
+            var identifier = message.identifier;
+            var data = JSON.parse(message.data);
+
+            //Now you can handle the data based on the identifier
+            if (identifier === "clientObject") {
+                myInfo = data;
+    // Update the client ID display
+    var clientIdElement = document.getElementById("clientId");
+    clientIdElement.textContent = myInfo.client_id;
+            } else if (identifier === "clientConnections") {
+                clientConnections = data;
+            } else if (identifier === "directMessage") {
+                //directMessages received
+                directMessages.push(data);
+                updateDirectMessageDisplay();
+            } else if (identifier === "chatRooms") {
+                chatRooms = data;
+                createChatRoomButtons();
+                chatRooms.forEach(chatRoom => {
+                    var lastIndex = lastAppendedMessageIndex[chatRoom.ID] || -1; // Get the last appended message index or set to -1 if not set
+                    chatRoom.messages.forEach((message, index) => {
+                        if (index > lastIndex) { // Only append if it's a new message
+                            appendMessage(message.chatRoomID, message.senderID, message.content);
+                            lastAppendedMessageIndex[chatRoom.ID] = index; // Update the last appended message index
+                        }
+                    });
+                });
+            } else if (identifier === "chatRoomMessage") {
+                var chatRoomMessage = data;
+
+            }
+        }
+
+        function createChatWindow(chatRoom, index) {
+
+            var chatWindow = document.createElement("div");
+            chatWindow.className = "gchatContainer"; // Add a class for styling
+            chatWindow.style.position = "fixed";
+            chatWindow.style.right = "10px";
+            chatWindow.style.bottom = (10 + (index * 260)) + "px"; // Adjust the bottom position based on index
+            chatWindow.style.width = "400px"; // Adjust the width
+            chatWindow.style.height = "250px"; // Adjust the height
+            chatWindow.style.background = "transparent";
+            chatWindow.style.border = "1px solid #ccc";
+            chatWindow.style.fontFamily = "'Arial', sans-serif";
+            chatWindow.style.overflow = "hidden";
+            // Get the chat room name from the input element
+            var chatRoomName = document.getElementById("chatRoomNameInput").value;
+
+            // Create a new header element for the chat window
+            var header = document.createElement("div");
+            header.textContent = chatRoomName; // Set the text content to the chat room name
+            header.style.fontWeight = "bold";
+            header.style.fontSize = "16px";
+            header.style.padding = "10px";
+            header.style.backgroundColor = "#f2f2f2";
+            chatWindow.appendChild(header);
+
+            var chatTextDisplayArea = document.createElement("div");
+            chatTextDisplayArea.id = "chatTextDisplay_" + chatRoom.ID;
+            chatTextDisplayArea.className = "groupmsgContainer"; // Add a class for styling
+            chatTextDisplayArea.style.height = "100%"; // Adjust the height
+            chatTextDisplayArea.style.padding = "10px";
+            chatWindow.appendChild(chatTextDisplayArea);
+
+            var chatInputContainer = document.createElement("div");
+            chatInputContainer.className = "textContainer"; // Add a class for styling
+            chatInputContainer.id = "gchatInput"
+
+            var chatInput = document.createElement("input");
+            chatInput.id = "input";
+            chatInput.type = "text";
+            chatInput.placeholder = "Type your message here";
+            chatInput.style.width = "calc(100% - 100px)";
+            chatInput.style.height = "30px";
+            chatInput.style.marginRight = "10px";
+            chatInput.style.boxSizing = "border-box";
+            chatInputContainer.appendChild(chatInput);
+
+            var sendButton = document.createElement("button");
+            sendButton.id = "sendGroupMessageButton";
+            sendButton.className = "sendContainer"; // Add a class for styling
+            sendButton.textContent = "Send";
+            sendButton.style.width = "80px";
+            sendButton.style.height = "30px";
+            chatInputContainer.appendChild(sendButton);
+            var notificationCount = 0;
+
+            chatWindow.appendChild(chatInputContainer);
+
+            // Add click event listener to the send button
+            sendButton.addEventListener("click", function() {
+                var groupChatMessage = {
+                    chatRoomID: chatRoom.ID,
+                    senderID: myInfo.client_id,
+                    content: document.getElementById("input").value
+                };
+
+                connection.send(JSON.stringify(new serveData("groupChatMessage", JSON.stringify(groupChatMessage))));
+                //appendMessage(groupChatMessage.chatRoomID, groupChatMessage.senderID, groupChatMessage.content);
+                // window.alert("A user has sent you a message.");	
+                $('#notificationModal').modal('show');
+                document.getElementById("gchatInput").value = "";
+                notificationCount++;
+                updateNotificationCount();
+            });
+            //chatWindow.appendChild(sendGroupChatMessageButton);	
+
+
+            document.body.appendChild(chatWindow);
+
+            function updateNotificationCount() {
+                var notificationCountElement = document.getElementById("notificationCount");
+                notificationCountElement.textContent = notificationCount;
+            }
+
+            var closeButton = document.createElement("button");
+            closeButton.textContent = "Close";
+            closeButton.style.width = "80px";
+            closeButton.style.height = "30px";
+            chatWindow.appendChild(closeButton);
+
+            closeButton.addEventListener("click", function() {
+                chatWindow.parentNode.removeChild(chatWindow);
+
+                var disJoinRequest = {
+                    requesterID: myInfo.client_id,
+                    chatRoomToJoin: chatRoom.ID
+                };
+                connection.send(JSON.stringify(new serveData("disJoinRequest", JSON.stringify(disJoinRequest))));
+
+                if (notificationCount !== 0) {
+                    notificationCount--;
+                    updateNotificationCount();
+                }
+
+            });
+
+            return chatWindow;
+        }
+
+
+        // Updates directMessages sent to current client
+        function updateDirectMessageDisplay() {
+            var content = document.getElementById("content");
+            content.innerHTML = ""; // Clear the existing content
+
+            for (var i = 0; i < directMessages.length; i++) {
+                var message = directMessages[i];
+                var messageElement = document.createElement("div");
+                messageElement.textContent = message.from + ': ' + message.content;
+                content.appendChild(messageElement);
+
+                if (message.from === myInfo.client_id) {
+                    messageElement.classList.add("sent-message");
+                } else {
+                    messageElement.classList.add("received-message");
+                }
+                content.appendChild(messageElement);
+            }
+        }
+
+        //displays which clients are connected to the server
+        function showClientList() {
+            var clientListDiv = document.getElementById("clientList");
+            clientListDiv.innerHTML = ""; // Clear the existing list
+
+            for (var i = 0; i < clientConnections.length; i++) {
+                var client = clientConnections[i];
+                var clientElement = document.createElement("div");
+                var checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.id = 'client_' + client.client_id;
+                checkbox.name = "clientCheckbox";
+                checkbox.value = client.client_id;
+                checkbox.className = "client-checkbox"; // Assign CSS class
+                checkbox.addEventListener("change", function() {
+                    directMessageRecipientID = this.value;
+                    var checkboxes = document.getElementsByName('clientCheckbox');
+                    for (var j = 0; j < checkboxes.length; j++) {
+                        if (checkboxes[j].id != this.id) {
+                            checkboxes[j].checked = false;
+                        }
+                    }
+                });
+                var label = document.createElement("label");
+                label.htmlFor = 'client_' + client.client_id;
+                label.className = "client-label"; // Assign CSS class
+                label.appendChild(document.createTextNode(' Client ID: ' + client.client_id + ' ' + formatLastActive(client.lastActive)));
+                clientElement.appendChild(checkbox);
+                clientElement.appendChild(label);
+                clientListDiv.appendChild(clientElement);
+            }
+        }
+
+        // Format the last active time
+        function formatLastActive(lastActive) {
+            var currentDate = new Date();
+            var timeDiff = currentDate - new Date(lastActive);
+            var seconds = Math.floor(timeDiff / 1000);
+            var minutes = Math.floor(seconds / 60);
+            var hours = Math.floor(minutes / 60);
+
+            if (hours > 0) {
+                return 'active ' + hours + ' hours ago';
+            } else if (minutes === 1) {
+                return 'active ' + minutes + ' minute ago';
+            } else if (minutes >= 2) {
+                return 'active ' + minutes + ' minutes ago';
+            } else {
+                return 'last seen now';
+            }
+        }
+
+        function appendMessage(chatRoomID, senderID, content) {
+            // Get the chat text display area based on chatRoomID
+            var chatTextDisplayArea = document.getElementById("chatTextDisplay_" + chatRoomID);
+            if (!chatTextDisplayArea) {
+                console.error("Chat display area not found for chatRoomID:", chatRoomID);
+                return;
+            }
+
+            // Create a new message element
+            var messageElement = document.createElement("div");
+            messageElement.textContent = (senderID === myInfo.client_id ? "You: " : "Client " + senderID + ": ") + content;
+
+            if (senderID === myInfo.client_id) {
+                messageElement.classList.add("sent-message");
+            } else {
+                messageElement.classList.add("received-message");
+            }
+
+            // Append the new message element to the chat text display area
+            chatTextDisplayArea.appendChild(messageElement);
+        }
+
+
+        //opens the showClientList() functionality
+        var clientButton = document.querySelector("[data-target='#clientModal']");
+        clientButton.addEventListener("click", function() {
+            showClientList();
+        });
+
+        //direct message button
+        var sendDirectMessageButton = document.getElementById("sendDirectMessageButton");
+        sendDirectMessageButton.addEventListener("click", function() {
+
+            //do not messages to null recipient
+            if (directMessageRecipientID === null) {
+                var errorMessage = document.getElementById("errorMessage");
+                errorMessage.style.display = "block";
+                // Clear the error message after a few seconds (optional)
+                setTimeout(function() {
+                    errorMessage.style.display = "none";
+                }, 5000); // Hide the error message after 5 seconds (adjust as needed)   
+
+            } else {
+                var message = {
+                    from: myInfo.client_id,
+                    to: directMessageRecipientID,
+                    content: document.getElementById("directMessagingInput").value
+                };
+
+                //this checks to see if the message is null, if so then it will prompt an error when the user clicks send
+                if (message.content === "") {
+                    var errorSend = document.getElementById("errorSend");
+                    errorSend.style.display = "block";
+
+                    // Clear the error message after a few seconds (optional)
+                    setTimeout(function() {
+                        errorSend.style.display = "none";
+                    }, 5000);
+                } else {
+
+                    //send the direct message to the server
+                    connection.send(JSON.stringify(new serveData("directMessage", JSON.stringify(message))));
+
+                    //clear the textField
+                    document.getElementById("directMessagingInput").value = "";
+                }
+            }
+        });
+
+        //add a chatroom
+        var createChatRoomButton = document.getElementById("createChatRoom");
+        createChatRoomButton.addEventListener("click", function() {
+            //collect chatroom name from user input
+            var chatRoomNameInput = document.getElementById("chatRoomNameInput");
+            var chatRoomName = chatRoomNameInput.value.trim();
+
+            //TO DO : check for uniqueness of name
+            if (chatRoomName !== "") {
+                //send server a request to create a chatroom with the given name using serveData class
+                connection.send(JSON.stringify(new serveData("createChatRoom", JSON.stringify(chatRoomName))));
+            } else {
+                alert("Chatroom Name cannot be empty!");
+            }
+        });
+        /*
+            creates the buttons that correspond to each individual chatroom
+            groupChats is the newly updated list of groupchats that will be sent to the 
+            client. Thus, the method will be called in the connection.onmessage() function
+        */
+        function createChatRoomButtons() {
+            var chatRoomList = document.getElementById("chatRoomButtonList");
+            chatRoomButtonList.innerHTML = ""; // Clear the existing buttons before appending
+
+            //loop through list of groupchats and publish a button for each one
+            chatRooms.forEach(function(chatRoom, index) {
+                var button = document.createElement("button");
+                button.innerText = chatRoom.name;
+                button.onclick = function() {
+                    createChatWindow(chatRoom, index)
+
+                    //inform server you are connecting to the chatroom
+                    var joinRequest = {
+                        requesterID: myInfo.client_id,
+                        chatRoomToJoin: chatRoom.ID
+                    }
+                    connection.send(JSON.stringify(new serveData("joinRequest", JSON.stringify(joinRequest))));
+                };
+
+                chatRoomList.appendChild(button);
+            });
+        }
+    });
+</script>

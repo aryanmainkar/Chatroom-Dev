@@ -1,0 +1,356 @@
+body {
+    background-image: linear-gradient(rgb(255, 255, 255), rgb(160, 160, 160));
+    margin: 0;
+    padding: 0;
+   
+}
+html {
+    height: 100%;
+}
+label {
+    font-family: 'Comfortaa', cursive;
+}
+.input {
+    background-color: transparent;
+    padding: 10px;
+    border-radius: 25px;
+    font-family: 'Comfortaa', cursive;
+    width: 200px;
+}
+.loginContainer {
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 500px;
+    margin: 0 auto; 
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+
+}
+.loginButton{
+    display: flex;
+    background-color: transparent;
+    padding: 7px;
+    border-radius: 25px;
+    font-family: 'Comfortaa', cursive;
+    margin-right: 5px;
+    margin-top: 10px;
+}
+
+.loginButton:hover{
+    display: flex;
+    background-color: rgb(0, 34, 129);
+    border-radius: 25px;
+   
+    font-family: 'Comfortaa', cursive;
+    margin-right: 5px;
+    color: white;
+    margin-top: 10px;
+}
+.signupButton{
+    display: flex;
+    background-color: transparent;
+    padding: 7px;
+    border-radius: 25px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Comfortaa', cursive;
+    max-width: 300px;
+    overflow-wrap: normal;
+    border-spacing: 20px;
+    margin-top: 5px;
+}
+.signupButton:hover{
+    display: flex;
+    background-color: rgb(0, 34, 129);
+    padding: 7px;
+    border-radius: 25px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Comfortaa', cursive;
+    margin-right: 5px;
+    color: white;
+    margin-top: 5px;
+}
+.signupButton2{
+    background-color: transparent;
+    padding: 7px;
+    border-radius: 25px;
+    max-width: 150px;
+    font-family: 'Comfortaa', cursive;
+}
+
+.signupButton2:hover{
+    background-color: transparent;
+    padding: 7px;
+    border-radius: 25px;
+    max-width: 150px;
+    font-family: 'Comfortaa', cursive;
+    background-color: rgba(0, 45, 170, 0.596);
+    color: white;
+}
+
+.signupContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    max-width: 100vw;
+    border: 5px solid rgb(0, 0, 0, .5);
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.chatContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 500px;
+    min-height: 100px; /* Optional minimum height */
+    max-height: 800px; /* Optional maximum height */
+    border: 5px solid rgba(0, 0, 0, .5);
+    margin: 5px auto;
+    padding: 20px;
+    overflow-y: auto; /* Allows scrolling if the content exceeds max-height */
+    overflow-wrap: normal;
+}
+
+.gchatContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 500px;
+    border: 5px solid rgba(0, 0, 0, .5);
+    margin: 5px auto;
+    padding: 20px;
+    overflow-y: auto; /* Allows scrolling */
+    overflow-wrap: normal;
+}
+
+.msgContainer {
+    background-color: white;
+    min-height: 50px; /* Optional minimum height */
+    max-height: 500px; /* Optional maximum height */
+    width: 300px;
+    text-shadow: black 1px 1px 1px;
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    display: inline-block;
+    color: white;
+    font-family: 'Comfortaa', cursive;
+    overflow-y: auto; /* Allows scrolling if the content exceeds max-height */
+    word-wrap: break-word; /* Wraps the content within the container */
+}
+
+
+.groupmsgContainer {
+    text-shadow: black 1px 1px 1px;
+    min-width: 100px; /* Minimum width */
+    max-width: 300px; /* Maximum width */
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    display: inline-block;
+    color: white;
+    font-family: 'Comfortaa', cursive;
+    background-color: #001bb1;
+    overflow-y: auto;
+    word-wrap: break-word; /* Wraps the content within the container */
+}
+
+.textContainer {
+    padding: 5px;
+    border-radius: 30px;
+    margin-top: 5px;
+   
+}
+
+input#textInput {
+    background-color: transparent;
+    padding: 10px;
+    border-radius: 25px;
+    font-family: 'Comfortaa', cursive;
+    width: 200px;
+ 
+}
+
+::placeholder {
+    color: rgb(59, 59, 59);
+    font-family: 'Comfortaa', cursive;
+}
+
+.sendContainer {
+    background-color: transparent;
+    padding: 7px;
+    border-radius: 25px;
+    max-width: 60px;
+    font-family: 'Comfortaa', cursive;
+    text-align: right;
+    color: white;
+    
+}
+.sendContainer:hover {
+    background-color: #001bb1;
+    padding: 7px;
+    border-radius: 25px;
+    max-width: 60px;
+    font-family: 'Comfortaa', cursive;
+    text-align: right;
+}
+
+.chatPrompts {
+    padding-top: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.sent-message {
+    background-color: #ffffff; 
+    color: rgb(20, 20, 20);
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    text-align: right;
+    justify-content: flex-end;
+}
+
+.received-message {
+    background-color: #001bb1; 
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    text-align: left;
+    justify-content: flex-start;
+}
+
+.modal-dialog {
+    max-width: 300px;
+}
+
+.modal-content {
+    background-color: #f7f7f7;
+    border-radius: 15px;
+    border: none;
+}
+
+.modal-header {
+    border-bottom: none;
+}
+
+.modal-title {
+    font-size: 1.5em;
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.client-checkbox {
+    margin-right: 10px;
+}
+
+.client-label {
+    font-size: 1.2em;
+    color: #555;
+}
+
+.modal-footer {
+    border-top: none;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #fff;
+    border-radius: 7px;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+.toButton {
+    background-color: #001bb1 !important;
+    padding: 10px;
+    border-radius: 25px;
+    font-family: 'Comfortaa', cursive;
+    text-align: right;
+    color: white;
+    margin: 2px;
+   
+}
+.displayName{
+    margin: 5px;
+}
+
+.createChatRoom {
+    background-color: #001bb1;
+    padding: 10px;
+    border-radius: 25px;
+    font-family: 'Comfortaa', cursive;
+    text-align: right;
+    color: white;
+    margin: 2px;
+}
+
+.notification-bell {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    cursor: pointer;
+}
+
+.notification-bell i {
+    font-size: 24px;
+}
+
+.notification-count {
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 4px 8px;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 14px;
+}
+
+.welcome-header {
+    text-align: center; /* Center the text */
+    opacity: 0.8; /* Make it slightly faded */
+   
+  }
+  
+  .welcome-header h2 {
+    font-size: 36px; /* Make the font size big */
+    color: #333; /* Set the text color */
+    font-family: 'Comfortaa', sans-serif; /* Use a specific font if you like */
+    margin-top: 50px; /* Add some margin at the top */
+  }
+  
+  .client-id-display {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px;
+    background-color: #f2f2f2;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+}

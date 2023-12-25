@@ -1,0 +1,10 @@
+Aug 14, 2023 9:53:12 PM uta.cse.cse3310.webchat.App main
+INFO: "HTTP server started on port: 8084"
+Aug 14, 2023 9:53:12 PM uta.cse.cse3310.webchat.App onStart
+INFO: "WebSocket server started on address: 0.0.0.0, port: 8085"
+Aug 14, 2023 9:53:14 PM uta.cse.cse3310.webchat.App onClose
+INFO: "WebSocket connection closed with code: 1001"
+Aug 14, 2023 9:53:20 PM uta.cse.cse3310.webchat.App onClose
+INFO: "WebSocket connection closed with code: 1006"
+Aug 14, 2023 9:53:23 PM uta.cse.cse3310.webchat.App onClose
+INFO: "WebSocket connection closed with code: 1006"

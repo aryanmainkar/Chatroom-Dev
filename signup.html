@@ -1,0 +1,72 @@
+<!-- signup.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <form id="signupForm" class="signupContainer">
+        <label for="username">Username:</label>
+        <input type="text" id="username" class="input" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" class="input" name="password" required>
+        <br>
+        <input type="submit" value="Create an Account" onClick="handleSignup()" class="signupButton2">
+    </form>
+
+    <script>
+        var serverUrl = "ws://" + window.location.hostname + ":8085";
+        var connection = new WebSocket(serverUrl);
+
+        class serveData {
+            constructor(identifier, data) {
+                this.identifier = identifier;
+                //shall be a json string
+                this.data = data;
+            }
+        }
+        connection.onmessage = function (event) {
+            var response = JSON.parse(event.data);
+            if (response.identifier === "signupResult" && response.data === "success") {
+                window.location.href = "/index.html";
+            } else {
+                var errorMessage = document.getElementById("errorMessage");
+                    errorMessage.style.display = "block";
+                    // Clear the error message after a few seconds
+                    setTimeout(function() {
+                        errorMessage.style.display = "none";
+                    }, 5000); // Hide the error message after 5 seconds
+            }
+        };
+
+        function handleSignup() {
+            event.preventDefault(); // Prevent the default form submission behavior
+
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            //create login information
+            var login = {
+                username: username,
+                password: password
+            }
+
+            //send login info to the server for validation to create an account
+            var servLogin = new serveData("creating an account", JSON.stringify(login));
+            connection.send(JSON.stringify(servLogin));
+
+            window.location.href = "/index.html";
+
+      
+
+        }
+    </script>
+</body>
+
+</html>

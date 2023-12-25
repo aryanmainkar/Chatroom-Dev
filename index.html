@@ -1,0 +1,88 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="welcome-header">
+        <h2>Welcome To Webchat</h2>
+    <form id="loginForm" class="loginContainer">
+        <label for="username">Username:</label>
+        <input type="text" id="username" class="input" name="username" placeholder="Username" required >
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" class="input" name="password" placeholder="Password"required>
+        <br>
+        <div id="errorMessage" style="color: red; display: none;">Username Or Password Is Incorrect!</div>
+            <input type="submit" value="Login" onClick="handleLogin()" class="loginButton">
+            <input type="submit" value="No account? Signup Here" onClick="redirectToSignup()" class="signupButton">
+    </form>
+</div>
+    <script>
+        var serverUrl = "ws://" + window.location.hostname + ":8085";
+        var connection = new WebSocket(serverUrl);
+         
+         class serveData {
+            constructor(identifier, data) {
+                this.identifier = identifier;
+                //shall be a json string
+                this.data = data;
+            }
+        }
+
+        function handleLogin() {
+            event.preventDefault(); // Prevent the default form submission behavior
+
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            // Perform login validation here (optional client-side validation).
+             var login = {
+                username:username,
+                password:password
+            }
+
+            //send login info to the server for validation
+            var servLogin = new serveData("login", JSON.stringify(login));
+            connection.send(JSON.stringify(servLogin));
+
+            // Store client information in local storage
+            localStorage.setItem('clientInfo', JSON.stringify(login));
+        }
+
+        connection.onmessage = function(evt) {
+            var msg = evt.data;
+            console.log("Message received: " + msg);
+
+            var message = JSON.parse(msg);
+
+            //determine what kind of message was received
+            var identifier = message.identifier;
+            var data = JSON.parse(message.data);
+
+            // Now you can handle the data based on the identifier
+            if (identifier === "loginResult") {
+                if(data === "validation successful") {
+                    window.location.href = "/webchat.html";
+                } else if(data === "validation unsuccessful"){
+                    var errorMessage = document.getElementById("errorMessage");
+                    errorMessage.style.display = "block";
+                    // Clear the error message after a few seconds
+                    setTimeout(function() {
+                        errorMessage.style.display = "none";
+                    }, 5000); // Hide the error message after 5 seconds
+                }
+            }
+        }
+
+        function redirectToSignup() {
+            event.preventDefault(); // Prevent the default form submission behavior
+            window.location.href = "/signup.html";
+        }
+    </script>
+</body>
+</html>
